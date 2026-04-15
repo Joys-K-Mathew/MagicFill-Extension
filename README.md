@@ -4,8 +4,6 @@
   <p><strong>A secure, beautiful, and premium data-fill extension for Chrome and Firefox.</strong></p>
   
   <p>
-    <a href="#"><img src="https://img.shields.io/badge/Chrome-Extension-blue?logo=googlechrome" alt="Chrome Extension"></a>
-    <a href="#"><img src="https://img.shields.io/badge/Firefox-Addon-orange?logo=firefox" alt="Firefox Addon"></a>
     <a href="#"><img src="https://img.shields.io/badge/Security-AES--GCM%20%7C%20PBKDF2-success" alt="Security"></a>
   </p>
 </div>
