@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Magic Fill",
+  "version": "1.0",
+  "description": "Secure Key-Value form auto-filler prioritizing your privacy.",
+  "permissions": [
+    "storage",
+    "alarms",
+    "idle",
+    "contextMenus"
+  ],
+  "commands": {
+    "lock-vault": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Lock the Magic Fill vault immediately"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'self';"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "icons/icon128.png",
+    "default_title": "Magic Fill"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "browser-polyfill.js",
+        "content/content.js"
+      ],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content/content.css"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

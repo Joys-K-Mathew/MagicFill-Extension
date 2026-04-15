@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Auto Filler Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+
+<body class="locked-ui dark-mode">
+
+  <div id="lock-screen" style="display: none;">
+    <div class="logo-icon">✨</div>
+    <h2>Magic Fill</h2>
+    <input type="password" id="pin-input" placeholder="• • • •" maxlength="8">
+    <button id="unlock-btn" class="primary-btn">🔓 Unlock</button>
+    <p style="font-size: 9px; opacity: 0.4; margin: 24px 0 0 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Vault Status: Locked & Secured</p>
+    <div id="lock-error"
+      style="color:var(--danger); font-size: 12px; margin-top: 10px; font-weight: 600; opacity: 0; transition: 0.3s;">
+      Incorrect PIN</div>
+
+  </div>
+
+  <div class="container" id="main-container">
+    <div class="header">
+      <h2 style="margin:0;">✨ Magic Fill</h2>
+      
+      <div class="header-tools">
+        <div class="custom-select-container" id="profile-dropdown-container">
+          <div class="custom-select-trigger" id="profile-trigger">
+            <div class="marquee-viewport">
+              <span id="active-profile-name">Default Profile</span>
+            </div>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="custom-options" id="profile-options">
+            <div id="profile-list-container"></div>
+          </div>
+        </div>
+
+        <button id="edit-lock-btn" class="header-action-btn emerald-header-btn" title="Add or Edit Fields">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>Edit</span>
+        </button>
+        <button id="history-btn" class="icon-btn" title="Fill History">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </button>
+        <button id="settings-btn" class="icon-btn" title="Extension Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="search-container" style="position: relative;">
+        <input type="text" id="search-input" placeholder="Search profiles or fields..." 
+          style="width: 100%; padding: 10px 12px 10px 36px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-alt); color: var(--text); font-size: 0.85rem; outline: none; transition: 0.2s;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" 
+          style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; opacity: 0.4;">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <div class="header-row">
+        <span style="width: 24px; flex-shrink: 0;" class="read-only-hide"></span>
+        <span style="flex: 1.2; padding-left: 2px;">Identifiers</span>
+        <span style="flex: 1;">Values</span>
+        <span style="width: 32px; flex-shrink: 0;" class="read-only-hide"></span>
+      </div>
+      <div id="pairs-container">
+      </div>
+
+      <div class="data-actions-row">
+        <button id="add-btn" class="secondary-btn" style="flex: 1; padding: 12px; font-weight: 700;">➕ Add
+          Field</button>
+        <button id="save-btn" class="primary-btn" style="flex: 2; padding: 12px; font-weight: 700;">✓ Save Profile
+          Data</button>
+      </div>
+    </div>
+
+
+    <div class="footer about-section">
+      ✨ Magic Fill v1.0 &bull; Developed by <a href="https://www.linkedin.com/in/joyskmathew/" target="_blank" rel="noopener noreferrer" class="about-link">Joys K Mathew 🇮🇳</a>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <div id="settings-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Settings</h3>
+        <button id="close-settings-btn" class="close-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="setting-group">
+        <label>Profile Management</label>
+        <button id="add-profile-setting-btn" class="action-btn wide-btn success" style="width: 100%; margin-bottom: 12px; font-weight: 700; padding: 12px; justify-content: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;margin-right:8px;"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>Create New Profile</span>
+        </button>
+        
+        <div id="profile-management-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding-right: 4px;">
+           <!-- JS will populate individual profile rows with actions here -->
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label>Vault Controls</label>
+        <div class="setting-row">
+          <span>Backup & Restoration</span>
+          <div style="display:flex; gap:6px;">
+            <button id="import-btn" class="action-btn highlight-btn action-icon-btn" title="Import Vault">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            </button>
+            <button id="export-btn" class="action-btn highlight-btn action-icon-btn" title="Export Vault">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-group" style="border-bottom: none; margin-bottom: 0; padding-bottom: 0;">
+        <label>App Controls</label>
+        <div class="setting-row">
+          <span>Dark Mode Theme</span>
+          <label class="switch">
+            <input type="checkbox" id="theme-switch">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <span>Security Vault</span>
+          <button id="pin-btn" class="action-btn wide-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:6px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Change PIN</span>
+          </button>
+        </div>
+
+        <div class="timer-select-group" id="timeout-row" style="display:none;">
+          <label style="font-size: 0.65rem; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block;">Vault Auto-Lock Duration</label>
+          <div class="custom-select-container" id="timeout-dropdown-container">
+            <div class="custom-select-trigger" id="timeout-trigger">
+              <div class="marquee-viewport">
+                <span id="active-timeout-name">5 Minutes</span>
+              </div>
+              <span class="chevron">▼</span>
+            </div>
+            <div class="custom-options up" id="timeout-options">
+              <div class="custom-option" data-val="-1">Close Entire Browser</div>
+              <div class="custom-option" data-val="0">Close Popup (~30s grace)</div>
+              <div class="divider"></div>
+              <div class="custom-option" data-val="1">Inactivity: 1 Minute</div>
+              <div class="custom-option" data-val="5">Inactivity: 5 Minutes</div>
+              <div class="custom-option" data-val="15">Inactivity: 15 Minutes</div>
+              <div class="custom-option" data-val="60">Inactivity: 1 Hour</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="setting-row" id="lock-now-row" style="display:none; padding-top:12px; justify-content: center;">
+          <button id="lock-now-btn" class="action-btn danger wide-btn" style="min-width: 150px; font-weight: 800;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;margin-right:8px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Lock Vault Now</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="onboarding-modal" class="modal" style="z-index: 3000;">
+    <div class="modal-content" style="max-width: 400px; text-align: center; padding: 25px;">
+      <!-- Step 1: Welcome -->
+      <div id="onboarding-step-1" class="tutorial-slide">
+        <div style="font-size: 40px; margin-bottom: 10px;">✨</div>
+        <h2>Welcome to Magic Fill</h2>
+        <p class="tutorial-text">Your secure, smart assistant for form filling. Let's get you set up in 60 seconds.</p>
+        <button id="onboarding-next-1" class="primary-btn" style="width: 100%; padding: 12px;">Get Started</button>
+      </div>
+
+      <!-- Step 2: Profiles -->
+      <div id="onboarding-step-2" class="tutorial-slide" style="display: none;">
+        <div class="tutorial-badge">Part 1: Profiles</div>
+        <h3>Name Your First Profile</h3>
+        <p class="tutorial-text">Give your profile a name (e.g., <b>Personal</b> or <b>Work</b>). This will be your default identity.</p>
+        <div class="ui-preview">
+          <input type="text" id="onboarding-profile-name" placeholder="Enter Profile Name..." value="Default" 
+            style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--primary); background: var(--bg-alt); color: var(--text); font-size: 0.85rem; outline: none; text-align: center; font-weight: 700;">
+          <p style="font-size: 0.65rem; opacity: 0.6; margin-top: 8px;">You can add more profiles later in settings.</p>
+        </div>
+        <p class="tutorial-hint">Manage all profiles via the gear icon <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:12px;height:12px;display:inline;vertical-align:middle;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> in the header.</p>
+        <button id="onboarding-next-2" class="primary-btn" style="width: 100%; padding: 12px;">Next Step</button>
+      </div>
+
+      <!-- Step 3: Fields & Data -->
+      <div id="onboarding-step-3" class="tutorial-slide" style="display: none;">
+        <div class="tutorial-badge">Part 2: Managing Data</div>
+        <h3>How to Edit Content</h3>
+        <p class="tutorial-text">To add or edit your data, you must first click the <b>Green Edit Icon</b> in the top header.</p>
+        <div class="ui-preview" style="border-color: #10b981; border-width: 2.5px;">
+           <div style="display:flex; align-items:center; justify-content:center; gap:8px; color:#10b981; font-weight:800;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <span>Click to Unlock Editing</span>
+           </div>
+        </div>
+        <p class="tutorial-hint" style="font-weight:600;">Once green, you can freely edit Identifiers and Values below.</p>
+        <button id="onboarding-next-3" class="primary-btn" style="width: 100%; padding: 12px;">Next Step</button>
+      </div>
+
+      <!-- Step 4: Smart Capture -->
+      <div id="onboarding-step-4" class="tutorial-slide" style="display: none;">
+        <div class="tutorial-badge">Part 3: One-Tap Capture</div>
+        <h3>Auto-Capture Vault</h3>
+        <p class="tutorial-text">Visit any site and fill a form. We'll show a sparkle icon to let you save it instantly.</p>
+        <div class="ui-preview" style="background: rgba(99, 102, 241, 0.05); border: 2px dashed var(--primary); padding: 20px;">
+            <div style="font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 5px;">✨ Form Detected</div>
+            <div style="font-size: 0.75rem; opacity: 0.8;">Click this notification to save data to your profile</div>
+        </div>
+        <p class="tutorial-hint">No more manual typing—just fill once, and Magic Fill remembers forever.</p>
+        <button id="onboarding-next-4" class="primary-btn" style="width: 100%; padding: 12px;">Next Step</button>
+      </div>
+
+      <!-- Step 5: Floating Widget -->
+      <div id="onboarding-step-5" class="tutorial-slide" style="display: none;">
+        <div class="tutorial-badge">Part 4: Website Widget</div>
+        <h3>The Action Sparkle</h3>
+        <p class="tutorial-text">A small Sparkle icon ✨ floats on websites. Click it to choose your filling action.</p>
+        <div class="ui-preview" style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:24px; height:24px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-size:10px;">✨</div>
+                <div style="font-size:0.75rem; text-align:left;"><b>Fill Profile:</b> Fills everything in 1 click.</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:24px; height:24px; background:var(--bg-alt); border:1px solid var(--border); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--primary);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+                <div style="font-size:0.75rem; text-align:left;"><b>Quick Copy:</b> Copy specific items to clipboard.</div>
+            </div>
+        </div>
+        <button id="onboarding-next-5" class="primary-btn" style="width: 100%; padding: 12px;">Next Step</button>
+      </div>
+
+      <!-- Step 6: Search & Import -->
+      <div id="onboarding-step-6" class="tutorial-slide" style="display: none;">
+        <div class="tutorial-badge">Part 5: Backups & Safety</div>
+        <h3>Import & Export</h3>
+        <p class="tutorial-text">Never lose your data. Export a backup file to keep your profiles safe off-device.</p>
+        <div class="ui-preview" style="display:flex; gap:12px; justify-content:center;">
+             <div style="text-align:center; flex:1;">
+                <div style="font-weight:800; color:var(--primary); margin-bottom:5px;">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                </div>
+                <small style="font-size:10px; opacity:0.7;"><b>Import:</b> Restore from backup</small>
+             </div>
+             <div style="text-align:center; flex:1;">
+                <div style="font-weight:800; color:var(--primary); margin-bottom:5px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </div>
+                <small style="font-size:10px; opacity:0.7;"><b>Export:</b> Save manually</small>
+             </div>
+        </div>
+        <p class="tutorial-hint">Profiles are encrypted locally. Backups allow you to move data between browsers.</p>
+        <button id="onboarding-next-6" class="primary-btn" style="width: 100%; padding: 12px;">Setup PIN & Start</button>
+      </div>
+
+      <!-- Step 7: PIN -->
+      <div id="onboarding-step-7" class="tutorial-slide" style="display: none;">
+        <div style="font-size: 40px; margin-bottom: 10px;">🔐</div>
+        <h2>Final Step: Security</h2>
+        <p class="tutorial-text">Set your mandatory security PIN. This keeps your local data safe from prying eyes.</p>
+        <input type="password" id="onboarding-pin-1" placeholder="Enter PIN" maxlength="8" style="width:100%; margin-bottom:12px; padding:12px; border-radius:10px; border:2px solid var(--border); background:var(--bg); color:var(--text); text-align:center; font-size:18px; letter-spacing:4px; outline:none;">
+        <input type="password" id="onboarding-pin-2" placeholder="Confirm PIN" maxlength="8" style="width:100%; margin-bottom:20px; padding:12px; border-radius:10px; border:2px solid var(--border); background:var(--bg); color:var(--text); text-align:center; font-size:18px; letter-spacing:4px; outline:none;">
+        <button id="onboarding-save-pin" class="primary-btn" style="width: 100%; padding: 12px;">Secure Vault & Finish</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="history-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--primary);">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Fill History
+          <span id="history-count-badge" style="font-size: 10px; font-weight: 700; color: var(--primary); background: rgba(99, 102, 241, 0.1); padding: 2px 8px; border-radius: 20px; margin-left: auto;">0 Entries</span>
+        </h3>
+        <button id="close-history-btn" class="close-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="history-controls">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; opacity: 0.5;">History View</span>
+              <button id="auto-cleanup-btn" style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 20px; padding: 4px 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span style="font-size: 9px; font-weight: 800; color: #10b981; text-transform: uppercase; letter-spacing: 0.5px;">Manage Cleanup</span>
+              </button>
+          </div>
+          <div id="history-filter-pills">
+              <div class="filter-pill active" data-val="all">
+                <span>All</span>
+              </div>
+              <div class="filter-pill" data-val="1">
+                <span>Today</span>
+              </div>
+              <div class="filter-pill" data-val="7">
+                <span>1 Week</span>
+              </div>
+              <div class="filter-pill" data-val="30">
+                <span>1 Month</span>
+              </div>
+              <div class="filter-pill custom" id="filter-custom-btn">
+                <span>Custom</span>
+              </div>
+          </div>
+
+          <div id="inline-date-range" style="display: none; margin: 0 0 15px 0; animation: fadeIn 0.3s ease;">
+              <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                 <div class="inline-date-group">
+                    <label>From</label>
+                    <input type="date" id="inline-date-from" class="inline-date-input">
+                 </div>
+                 <div class="inline-date-group">
+                    <label>To</label>
+                    <input type="date" id="inline-date-to" class="inline-date-input">
+                 </div>
+              </div>
+          </div>
+      </div>
+
+      <div id="history-list-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 340px; overflow-y: auto; padding-right: 4px;">
+         <div style="text-align: center; padding: 40px 20px; opacity: 0.4;">
+            <div style="font-size: 32px; margin-bottom: 10px;">📋</div>
+            <div style="font-size: 13px; font-weight: 600;">No history yet.</div>
+            <div style="font-size: 11px;">Applications you fill will appear here.</div>
+         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="custom-dialog-modal" class="modal" style="z-index: 2000;">
+    <div class="modal-content custom-glass-dialog">
+      <div id="custom-dialog-header" style="display: flex; justify-content: flex-end; align-items: center; padding: 20px 24px 0 24px;">
+        <button id="custom-dialog-close" class="action-btn-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      
+      <div style="padding: 12px 28px 28px 28px; text-align: center;">
+        <h4 id="custom-dialog-title" style="margin: 0 0 10px 0; font-size: 1.25rem; font-weight: 850; color: #fff; letter-spacing: -0.03em;"></h4>
+        <p id="custom-dialog-msg" style="font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-bottom: 24px; line-height: 1.6;"></p>
+        
+        <input type="text" id="custom-dialog-input"
+          style="display:none; width:100%; margin-bottom:24px; padding:14px; border-radius:14px; border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #fff; font-size:15px; text-align:center; outline:none; transition: all 0.3s ease;">
+        
+        
+        <div id="custom-dialog-footer">
+          <button id="custom-dialog-cancel" class="dialog-cancel-btn">Cancel</button>
+          <button id="custom-dialog-confirm" class="dialog-confirm-btn">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../browser-polyfill.js"></script>
+  <script src="popup.js"></script>
+</body>
+
+</html>

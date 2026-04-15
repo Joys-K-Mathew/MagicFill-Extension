@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Original Gold Stars Brand -->
+  <path d="M64 10 C68 45 83 60 118 64 C83 68 68 83 64 118 C60 83 45 68 10 64 C45 60 60 45 64 10Z" fill="#ffb433" />
+  <path d="M30 25 C33 40 40 47 55 50 C40 53 33 60 30 75 C27 60 20 53 5 50 C20 47 27 40 30 25Z" transform="translate(0, 15) scale(0.6)" fill="#ffb433" opacity="0.9" />
+  <path d="M30 25 C33 40 40 47 55 50 C40 53 33 60 30 75 C27 60 20 53 5 50 C20 47 27 40 30 25Z" transform="translate(20, 60) scale(0.4)" fill="#ffb433" opacity="0.8" />
+  
+  <!-- Transparent Lock Badge (Bottom Right) -->
+  <rect x="75" y="75" width="40" height="30" rx="6" fill="#ef4444" />
+  <path d="M82 75 v-10 a12 12 0 0 1 24 0 v10" stroke="#ef4444" stroke-width="8" fill="none" />
+</svg>
