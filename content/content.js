@@ -259,8 +259,7 @@ const attemptInject = () => {
     const validInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea')).filter(input => {
         const type = input.type ? input.type.toLowerCase() : 'text';
         const vTypes = ['text', 'email', 'tel', 'url', 'number', 'textarea', 'search', 'password', 'date'];
-        const isVisible = input.offsetWidth > 0 && input.offsetHeight > 0;
-        return !(input.tagName.toLowerCase() === 'input' && !vTypes.includes(type)) && !input.readOnly && !input.disabled && isVisible;
+        return !(input.tagName.toLowerCase() === 'input' && !vTypes.includes(type)) && !input.readOnly && !input.disabled;
     });
     if (validInputs.length > 0) { initFloatingWidget(); return true; }
     return false;
@@ -284,7 +283,12 @@ function setupObserver() {
     });
     const target = document.body || document.documentElement;
     if (target) {
-        observer.observe(target, { childList: true, subtree: true });
+        observer.observe(target, { 
+            childList: true, 
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'style', 'hidden']
+        });
     }
 }
 
