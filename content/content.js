@@ -250,23 +250,42 @@ function scrapeForm() {
     return captured;
 }
 
-if (window === window.top) {
-  const attemptInject = () => {
-      const validInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea')).filter(input => {
-          const type = input.type ? input.type.toLowerCase() : 'text';
-          const vTypes = ['text', 'email', 'tel', 'url', 'number', 'textarea', 'search', 'password', 'date'];
-          return !(input.tagName.toLowerCase() === 'input' && !vTypes.includes(type)) && !input.readOnly && !input.disabled;
-      });
-      if (validInputs.length > 0) { initFloatingWidget(); return true; }
-      return false;
-  };
-  if (document.readyState === 'complete' || document.readyState === 'interactive') { if (!attemptInject()) setupObserver(); }
-  else { window.addEventListener('DOMContentLoaded', () => { if (!attemptInject()) setupObserver(); }); }
-  function setupObserver() {
-      const observer = new MutationObserver((mutations, obs) => { if (attemptInject()) obs.disconnect(); });
-      observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
-      setTimeout(() => observer.disconnect(), 10000);
-  }
+const attemptInject = () => {
+    if (window !== window.top) {
+        // Prevent injecting widget in tiny, invisible ad/tracker iframes
+        if (window.innerWidth < 200 || window.innerHeight < 200) return false;
+    }
+
+    const validInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea')).filter(input => {
+        const type = input.type ? input.type.toLowerCase() : 'text';
+        const vTypes = ['text', 'email', 'tel', 'url', 'number', 'textarea', 'search', 'password', 'date'];
+        const isVisible = input.offsetWidth > 0 && input.offsetHeight > 0;
+        return !(input.tagName.toLowerCase() === 'input' && !vTypes.includes(type)) && !input.readOnly && !input.disabled && isVisible;
+    });
+    if (validInputs.length > 0) { initFloatingWidget(); return true; }
+    return false;
+};
+
+if (document.readyState === 'complete' || document.readyState === 'interactive') { 
+    attemptInject(); 
+    setupObserver(); 
+} else { 
+    window.addEventListener('DOMContentLoaded', () => { 
+        attemptInject(); 
+        setupObserver(); 
+    }); 
+}
+
+function setupObserver() {
+    let debounceTimer = null;
+    const observer = new MutationObserver(() => { 
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => attemptInject(), 800); 
+    });
+    const target = document.body || document.documentElement;
+    if (target) {
+        observer.observe(target, { childList: true, subtree: true });
+    }
 }
 
 function initFloatingWidget() {
