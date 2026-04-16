@@ -1,6 +1,6 @@
 <div align="center">
   <img src="icons/icon128.png" alt="Magic Fill Logo" width="128">
-  <h1>✨ Magic Fill</h1>
+  <h1>Magic Fill</h1>
   <p><strong>A secure, beautiful, and premium data-fill extension for Chrome and Firefox.</strong></p>
   
   <p>
