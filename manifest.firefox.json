@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Magic Fill",
-  "version": "1.0.1",
+  "version": "5.0.1",
   "description": "Secure Key-Value form auto-filler prioritizing your privacy.",
   "browser_specific_settings": {
     "gecko": {
@@ -25,7 +25,10 @@
     }
   },
   "background": {
-    "scripts": ["browser-polyfill.js", "background.js"]
+    "scripts": [
+      "browser-polyfill.js",
+      "background.js"
+    ]
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'self';"
@@ -54,8 +57,12 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["content/content.css"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "content/content.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }

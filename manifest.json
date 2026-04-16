@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Magic Fill",
-  "version": "1.0.1",
+  "version": "5.0.1",
   "description": "Secure Key-Value form auto-filler prioritizing your privacy.",
   "permissions": [
     "storage",
@@ -48,8 +48,12 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["content/content.css"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "content/content.css"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }
