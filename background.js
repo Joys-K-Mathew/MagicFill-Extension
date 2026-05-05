@@ -55,7 +55,7 @@ function createContextMenus() {
         chrome.contextMenus.removeAll(() => {
             chrome.contextMenus.create({
                 id: 'toggle-widget-menu',
-                title: isHidden ? 'Unhide Floating Button' : 'Hide Floating Button',
+                title: isHidden ? 'Unhide MagicFill Floating Button' : 'Hide MagicFill Floating Button',
                 contexts: ['all']
             });
         });
@@ -73,7 +73,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
                 });
                 chrome.tabs.query({}, (tabs) => {
                     for (const tab of tabs) {
-                        chrome.tabs.sendMessage(tab.id, { action: 'toggleWidgetVisibility', isHidden }).catch(() => {});
+                        chrome.tabs.sendMessage(tab.id, { action: 'toggleWidgetVisibility', isHidden }).catch(() => { });
                     }
                 });
             });
@@ -95,7 +95,7 @@ function updateBadge(isLocked) {
 }
 
 // 2. Idle Detection: Lock when system is locked or idle
-chrome.idle.setDetectionInterval(60); 
+chrome.idle.setDetectionInterval(60);
 chrome.idle.onStateChanged.addListener((state) => {
     if (state === 'locked' || state === 'idle') {
         performLock();
@@ -117,7 +117,7 @@ async function performLock() {
     if (chrome.storage.session) await chrome.storage.session.remove('isSessionUnlocked');
     await chrome.storage.local.set({ lastUnlocked: 0 });
     updateBadge(true);
-    
+
     // Notify all tabs
     const tabs = await chrome.tabs.query({});
     for (const tab of tabs) {
@@ -134,7 +134,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         checkLockState().then(sendResponse);
         return true; // Keep channel open for async response
     }
-    
+
     if (request.action === 'unlockSession') {
         if (chrome.storage.session) {
             chrome.storage.session.set({ isSessionUnlocked: true }).then(() => {
@@ -175,7 +175,7 @@ async function checkLockState() {
 
                 chrome.storage.local.get(['lastUnlocked', 'lockoutUntil'], (localRes) => {
                     const now = Date.now();
-                    
+
                     // Brute-force lockout check
                     if (localRes.lockoutUntil && now < localRes.lockoutUntil) {
                         resolve({ isLocked: true, lockedUntil: localRes.lockoutUntil });
@@ -184,18 +184,18 @@ async function checkLockState() {
 
                     const to = parseInt(syncRes.lockTimeout || '5', 10);
                     const last = localRes.lastUnlocked || 0;
-                    
+
                     let isLocked = false;
-                    
+
                     // Get session state from storage
                     const checkSession = () => {
-                       return new Promise((res) => {
-                           if (chrome.storage.session) {
-                               chrome.storage.session.get(['isSessionUnlocked'], (sRes) => res(!!sRes.isSessionUnlocked));
-                           } else {
-                               res(false);
-                           }
-                       });
+                        return new Promise((res) => {
+                            if (chrome.storage.session) {
+                                chrome.storage.session.get(['isSessionUnlocked'], (sRes) => res(!!sRes.isSessionUnlocked));
+                            } else {
+                                res(false);
+                            }
+                        });
                     };
 
                     checkSession().then(async (unlocked) => {
