@@ -1,5 +1,7 @@
 const escapeCSS = (s) => (typeof CSS !== 'undefined' && CSS.escape) ? CSS.escape(s) : s.replace(/([\x00-\x1f\x7f]|^-?\d|^-$|\.)/g, '\\$&').replace(/[\[\](){}|\\^$*+?."'`~!@#%&=<>,;:/]/g, '\\$&');
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+let ajfListenersAdded = false;
+
 
 const sanitizeProfileData = (data) => {
     if (typeof data !== 'object' || data === null || Array.isArray(data)) return {};
@@ -473,43 +475,56 @@ function initFloatingWidget() {
 
   widget.addEventListener('click', togglePanel);
   document.addEventListener('click', (e) => { if (!e.composedPath().includes(widget) && !e.composedPath().includes(panel) && panel.classList.contains('show')) togglePanel(); });
-  if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
-      chrome.runtime.onMessage.addListener((msg) => {
-          if (msg.action === 'vaultLocked') {
-              // Only update if the panel is currently showing
-              if (panel.classList.contains('show')) {
-                  panel.innerHTML = `
-                      <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding: 10px 0;">
-                          <span style="font-size:32px; margin-bottom:8px;">🔒</span>
-                          <div class="ajf-header" style="justify-content:center; margin-bottom: 2px;">Vault Locked</div>
-                          <div style="font-size:12px; color:inherit; opacity: 0.8; line-height: 1.4;">
-                              Security timeout reached.<br>Open extension to unlock.
-                          </div>
-                      </div>`;
-                  cleanTooltips();
+  if (!ajfListenersAdded) {
+      ajfListenersAdded = true;
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage) {
+          chrome.runtime.onMessage.addListener((msg) => {
+              const currentHost = document.getElementById('ajf-shadow-host');
+              const currentPanel = currentHost?.shadowRoot?.getElementById('ajf-floating-panel');
+              if (!currentHost || !currentPanel) return;
+              
+              if (msg.action === 'vaultLocked') {
+                  if (currentPanel.classList.contains('show')) {
+                      currentPanel.innerHTML = `
+                          <div style="display:flex; flex-direction:column; align-items:center; text-align:center; padding: 10px 0;">
+                              <span style="font-size:32px; margin-bottom:8px;">🔒</span>
+                              <div class="ajf-header" style="justify-content:center; margin-bottom: 2px;">Vault Locked</div>
+                              <div style="font-size:12px; color:inherit; opacity: 0.8; line-height: 1.4;">
+                                  Security timeout reached.<br>Open extension to unlock.
+                              </div>
+                          </div>`;
+                      document.querySelectorAll('.ajf-highlight').forEach(el => el.classList.remove('ajf-highlight'));
+                  }
               }
-          } else if (msg.action === 'toggleWidgetVisibility') {
-              if (msg.isHidden) {
-                  host.style.display = 'none';
-                  if (panel.classList.contains('show')) togglePanel();
-              } else {
-                  host.style.display = 'block';
-              }
-          }
-      });
-  }
+          });
+      }
 
-  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
-      chrome.storage.onChanged.addListener((changes, namespace) => {
-         if (namespace === 'sync' && changes.theme) { if (changes.theme.newValue === 'dark') panel.classList.add('ajf-dark-theme'); else panel.classList.remove('ajf-dark-theme'); }
-         if (namespace === 'local' && changes.isWidgetHidden !== undefined) {
-             if (changes.isWidgetHidden.newValue) {
-                 host.style.display = 'none';
-                 if (panel.classList.contains('show')) togglePanel();
-             } else {
-                 host.style.display = 'block';
+      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
+          chrome.storage.onChanged.addListener((changes, namespace) => {
+             const currentHost = document.getElementById('ajf-shadow-host');
+             const currentPanel = currentHost?.shadowRoot?.getElementById('ajf-floating-panel');
+             if (!currentHost) return;
+             
+             if (namespace === 'sync' && changes.theme && currentPanel) { 
+                 if (changes.theme.newValue === 'dark') currentPanel.classList.add('ajf-dark-theme'); 
+                 else currentPanel.classList.remove('ajf-dark-theme'); 
              }
-         }
-      });
+             
+             if (namespace === 'local' && changes.isWidgetHidden !== undefined) {
+                 if (changes.isWidgetHidden.newValue) {
+                     currentHost.style.display = 'none';
+                     if (currentPanel && currentPanel.classList.contains('show')) {
+                         currentPanel.classList.remove('show');
+                         const widgetNode = currentHost.shadowRoot.getElementById('ajf-floating-widget');
+                         if (widgetNode) widgetNode.classList.remove('open');
+                         document.querySelectorAll('.ajf-highlight').forEach(el => el.classList.remove('ajf-highlight'));
+                         setTimeout(() => { if (widgetNode) widgetNode.innerHTML = '✨'; }, 150);
+                     }
+                 } else {
+                     currentHost.style.display = 'block';
+                 }
+             }
+          });
+      }
   }
 }

@@ -125,7 +125,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, data);
       
-      const toB64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+      const toB64 = (buf) => {
+          let binary = '';
+          const bytes = new Uint8Array(buf);
+          for (let i = 0; i < bytes.byteLength; i++) {
+              binary += String.fromCharCode(bytes[i]);
+          }
+          return btoa(binary);
+      };
       return {
           ciphertext: toB64(encrypted),
           salt: toB64(salt),

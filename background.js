@@ -69,12 +69,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
             const isHidden = !res.isWidgetHidden;
             chrome.storage.local.set({ isWidgetHidden: isHidden }, () => {
                 chrome.contextMenus.update('toggle-widget-menu', {
-                    title: isHidden ? 'Unhide Floating Button' : 'Hide Floating Button'
-                });
-                chrome.tabs.query({}, (tabs) => {
-                    for (const tab of tabs) {
-                        chrome.tabs.sendMessage(tab.id, { action: 'toggleWidgetVisibility', isHidden }).catch(() => { });
-                    }
+                    title: isHidden ? 'Unhide MagicFill Floating Button' : 'Hide MagicFill Floating Button'
                 });
             });
         });
