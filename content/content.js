@@ -502,6 +502,14 @@ function initFloatingWidget() {
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
       chrome.storage.onChanged.addListener((changes, namespace) => {
          if (namespace === 'sync' && changes.theme) { if (changes.theme.newValue === 'dark') panel.classList.add('ajf-dark-theme'); else panel.classList.remove('ajf-dark-theme'); }
+         if (namespace === 'local' && changes.isWidgetHidden !== undefined) {
+             if (changes.isWidgetHidden.newValue) {
+                 host.style.display = 'none';
+                 if (panel.classList.contains('show')) togglePanel();
+             } else {
+                 host.style.display = 'block';
+             }
+         }
       });
   }
 }
