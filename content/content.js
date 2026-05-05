@@ -300,6 +300,11 @@ function initFloatingWidget() {
   host.style.zIndex = '2147483647';
   host.style.bottom = '0';
   host.style.right = '0';
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+      chrome.storage.local.get(['isWidgetHidden'], (res) => {
+          if (res.isWidgetHidden) host.style.display = 'none';
+      });
+  }
   document.body.appendChild(host);
 
   const shadow = host.attachShadow({ mode: 'open' });
@@ -482,6 +487,13 @@ function initFloatingWidget() {
                           </div>
                       </div>`;
                   cleanTooltips();
+              }
+          } else if (msg.action === 'toggleWidgetVisibility') {
+              if (msg.isHidden) {
+                  host.style.display = 'none';
+                  if (panel.classList.contains('show')) togglePanel();
+              } else {
+                  host.style.display = 'block';
               }
           }
       });

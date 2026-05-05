@@ -50,19 +50,34 @@ function setupAlarms() {
 }
 
 function createContextMenus() {
-    chrome.contextMenus.removeAll(() => {
-        chrome.contextMenus.create({
-            id: 'lock-vault-menu',
-            title: 'Lock Magic Fill Vault',
-            contexts: ['action', 'page']
+    chrome.storage.local.get(['isWidgetHidden'], (res) => {
+        const isHidden = res.isWidgetHidden || false;
+        chrome.contextMenus.removeAll(() => {
+            chrome.contextMenus.create({
+                id: 'toggle-widget-menu',
+                title: isHidden ? 'Unhide Floating Button' : 'Hide Floating Button',
+                contexts: ['all']
+            });
         });
     });
 }
 
 // Handle context menu clicks
 chrome.contextMenus.onClicked.addListener((info) => {
-    if (info.menuItemId === 'lock-vault-menu') {
-        performLock();
+    if (info.menuItemId === 'toggle-widget-menu') {
+        chrome.storage.local.get(['isWidgetHidden'], (res) => {
+            const isHidden = !res.isWidgetHidden;
+            chrome.storage.local.set({ isWidgetHidden: isHidden }, () => {
+                chrome.contextMenus.update('toggle-widget-menu', {
+                    title: isHidden ? 'Unhide Floating Button' : 'Hide Floating Button'
+                });
+                chrome.tabs.query({}, (tabs) => {
+                    for (const tab of tabs) {
+                        chrome.tabs.sendMessage(tab.id, { action: 'toggleWidgetVisibility', isHidden }).catch(() => {});
+                    }
+                });
+            });
+        });
     }
 });
 
